@@ -39,3 +39,9 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# DreamPattern
+.env
+server-tests/node_modules/
+server-tests/.build/
+supabase/.temp/

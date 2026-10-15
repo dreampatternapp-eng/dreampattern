@@ -1,0 +1,4 @@
+# The app has no accounts in v1, so callers have no Supabase JWT.
+# The function does its own validation, quota and rate limiting.
+[functions.interpret]
+verify_jwt = false
