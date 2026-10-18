@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "DreamPattern",
-    "slug": "dreampattern",
+    "slug": "dreampatternapp",
     "scheme": "dreampattern",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -24,7 +24,10 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "permissions": ["android.permission.USE_BIOMETRIC", "android.permission.RECORD_AUDIO"],
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.RECORD_AUDIO"
+      ],
       "predictiveBackGestureEnabled": false
     },
     "plugins": [
@@ -34,11 +37,15 @@
       "expo-sharing",
       [
         "expo-local-authentication",
-        { "faceIDPermission": "DreamPattern uses Face ID to keep your dream journal private." }
+        {
+          "faceIDPermission": "DreamPattern uses Face ID to keep your dream journal private."
+        }
       ],
       [
         "expo-notifications",
-        { "color": "#8B7CF6" }
+        {
+          "color": "#8B7CF6"
+        }
       ],
       [
         "expo-speech-recognition",
@@ -48,9 +55,14 @@
         }
       ]
     ],
-    "experiments": { "typedRoutes": true },
+    "experiments": {
+      "typedRoutes": true
+    },
     "extra": {
-      "eas": { "projectId": "REPLACE_WITH_EAS_PROJECT_ID" }
-    }
+      "eas": {
+        "projectId": "f8f0fc42-acd5-4276-b51d-6ddf194a368f"
+      }
+    },
+    "owner": "dreampattern.app"
   }
 }
