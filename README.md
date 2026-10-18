@@ -21,7 +21,7 @@ Never commit keys and never paste them into chat.
 | Key | Where it goes | Where you get it |
 | --- | --- | --- |
 | Anthropic API key | Supabase dashboard > Edge Functions > Secrets > `ANTHROPIC_API_KEY` | console.anthropic.com > API keys |
-| RevenueCat **secret** key (`sk_...`) | Supabase Edge Function secret `REVENUECAT_SECRET_KEY` | RevenueCat > Project > API keys |
+| RevenueCat **secret** key (`sk_...`, must be a **V1** secret key; the function calls the v1 subscribers API) | Supabase Edge Function secret `REVENUECAT_SECRET_KEY` | RevenueCat > Project > API keys |
 | RevenueCat **public** iOS key (`appl_...`) | `.env` as `EXPO_PUBLIC_REVENUECAT_IOS_KEY` (also an EAS env var for builds) | RevenueCat > Project > API keys |
 | RevenueCat **public** Android key (`goog_...`) | `.env` as `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` | same |
 | Supabase project URL | `.env` as `EXPO_PUBLIC_API_URL` | Supabase > Project Settings > API |
