@@ -53,6 +53,15 @@
           "microphonePermission": "DreamPattern uses the microphone so you can speak your dream instead of typing it.",
           "speechRecognitionPermission": "DreamPattern turns your spoken dream into text, on your device where possible."
         }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#0E0B1F"
+        }
       ]
     ],
     "experiments": {
