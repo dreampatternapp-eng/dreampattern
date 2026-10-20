@@ -22,6 +22,7 @@ export default function EntryDetail() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const autoRan = useRef(false);
+  const quotaBlocked = useRef(false);
   const shareRef = useRef<View>(null);
 
   const load = useCallback(async () => {
@@ -52,6 +53,7 @@ export default function EntryDetail() {
       }
     } catch (e) {
       if (e instanceof QuotaExceededError) {
+        quotaBlocked.current = true;
         setError(`You've used your ${e.limit} free readings this month.`);
         router.push({ pathname: '/paywall', params: { reason: 'quota' } });
       } else {
@@ -68,6 +70,14 @@ export default function EntryDetail() {
       runInterpretation();
     }
   }, [interpret, ready, dream, interp, runInterpretation]);
+
+  // Subscribing from the paywall after hitting the free limit should deliver the reading that was blocked.
+  useEffect(() => {
+    if (isPremium && quotaBlocked.current && !interp && dream && !loading) {
+      quotaBlocked.current = false;
+      runInterpretation();
+    }
+  }, [isPremium, interp, dream, loading, runInterpretation]);
 
   const share = async () => {
     try {

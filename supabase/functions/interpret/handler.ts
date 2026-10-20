@@ -52,11 +52,15 @@ export async function handleRequest(req: Request, deps: Deps): Promise<Response>
   const ipKey = `ip:${ip}:${day}`;
   if ((await store.getCount(ipKey)) >= (deps.ipDailyLimit ?? 60)) return json({ error: 'rate_limited' }, 429);
 
-  const premium = await isPremium(userId, deps);
+  let premium = await isPremium(userId, deps);
   const limit = deps.freeMonthlyLimit ?? 3;
   const usageKey = `usage:${userId}:${day.slice(0, 7)}`;
   const used = await store.getCount(usageKey);
-  if (!premium && used >= limit) return json({ error: 'quota_exceeded', used, limit }, 402);
+  if (!premium && used >= limit) {
+    // Someone who just subscribed must not be blocked by a stale "not premium" cache entry.
+    premium = await isPremium(userId, deps, true);
+    if (!premium) return json({ error: 'quota_exceeded', used, limit }, 402);
+  }
 
   let out;
   try {
@@ -89,9 +93,9 @@ export async function handleRequest(req: Request, deps: Deps): Promise<Response>
 }
 
 /** Checks the "premium" entitlement with RevenueCat's REST API, cached for 5 minutes. */
-async function isPremium(userId: string, deps: Deps): Promise<boolean> {
+async function isPremium(userId: string, deps: Deps, skipCache = false): Promise<boolean> {
   if (userId.startsWith('$local:') || !deps.revenueCatSecretKey) return false;
-  const cached = await deps.store.getCachedEntitlement(userId);
+  const cached = skipCache ? null : await deps.store.getCachedEntitlement(userId);
   if (cached !== null) return cached;
 
   const res = await (deps.fetchFn ?? fetch)(

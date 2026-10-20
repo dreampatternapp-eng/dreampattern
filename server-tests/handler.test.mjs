@@ -72,6 +72,17 @@ test('free user gets 3 readings, then 402; recurring elements are not sent', asy
   assert.deepEqual(await r.json(), { error: 'quota_exceeded', used: 3, limit: 3 });
 });
 
+test('a stale "not premium" cache does not block someone who just subscribed', async () => {
+  let subscribed = false;
+  const deps = { anthropic, store: memoryStore(), revenueCatSecretKey: 'rc', fetchFn: async () => rc(subscribed)() };
+  for (let i = 0; i < 3; i++) assert.equal((await handleRequest(req({ app_user_id: 'u2', dream }), deps)).status, 200);
+  assert.equal((await handleRequest(req({ app_user_id: 'u2', dream }), deps)).status, 402);
+  subscribed = true;
+  const r = await handleRequest(req({ app_user_id: 'u2', dream, recurring }), deps);
+  assert.equal(r.status, 200);
+  assert.equal((await r.json()).usage.limit, null);
+});
+
 test('premium user is unlimited and gets the pattern callback', async () => {
   const deps = { anthropic, store: memoryStore(), revenueCatSecretKey: 'rc', fetchFn: rc(true) };
   for (let i = 0; i < 5; i++) {

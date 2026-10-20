@@ -42,6 +42,12 @@ export default function Paywall() {
     setBusy(true);
     try {
       if (await purchase(selected)) router.back();
+      else if (!isPremium) {
+        Alert.alert(
+          'Almost there',
+          "Your purchase went through but Premium isn't active yet. Tap Restore purchases in a moment, or contact support if it doesn't unlock.",
+        );
+      }
     } catch (e) {
       Alert.alert('Purchase failed', String((e as Error)?.message ?? 'Please try again.'));
     } finally {
