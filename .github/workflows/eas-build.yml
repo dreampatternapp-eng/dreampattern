@@ -1,0 +1,54 @@
+# Cloud builds without a Mac: run from the Actions tab (or by Claude via the
+# GitHub API). Needs the EXPO_TOKEN repo secret. Store submission uses the
+# App Store Connect API key saved on EAS (`eas credentials`).
+name: EAS build
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Build profile
+        type: choice
+        options: [preview, production]
+        default: preview
+      platform:
+        description: Platform
+        type: choice
+        options: [ios, android, all]
+        default: ios
+      submit:
+        description: Submit to TestFlight / Play after building (production only)
+        type: boolean
+        default: false
+
+concurrency:
+  group: eas-${{ inputs.profile }}-${{ inputs.platform }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - run: npm ci
+
+      - run: npx tsc --noEmit
+
+      - name: Build
+        run: |
+          args="--profile ${{ inputs.profile }} --platform ${{ inputs.platform }} --non-interactive --no-wait"
+          if [ "${{ inputs.submit }}" = "true" ] && [ "${{ inputs.profile }}" = "production" ]; then
+            args="$args --auto-submit"
+          fi
+          eas build $args
