@@ -13,7 +13,9 @@
       "supportsTablet": false,
       "infoPlist": {
         "NSFaceIDUsageDescription": "DreamPattern uses Face ID to keep your dream journal private.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "DreamPattern lets you save a dream card you've chosen to share to your photo library.",
+        "NSPhotoLibraryAddUsageDescription": "DreamPattern saves the dream card you choose to share to your photo library."
       }
     },
     "android": {
