@@ -113,3 +113,21 @@ iPhone 6.9" display (1320 × 2868), 3 to 10 images. Take these on your iPhone on
 3. An AI reading
 4. Patterns screen
 5. Paywall (optional; also used for subscription review)
+
+## Version 1.0.1 listing update (search optimisation)
+
+Apple only indexes the app name, subtitle and keyword field for search, and a word counts once no matter where it appears. The 1.0 listing repeats "dream", "journal" and "meaning" across fields, which wastes keyword space. These changes ship with the next app version (name and keywords can't change on a live version).
+
+| Field | 1.0 | 1.0.1 (proposed) | Length |
+|---|---|---|---|
+| Name (30) | DreamPattern | DreamPattern: AI Dream Journal | 30 |
+| Subtitle (30) | AI Dream Journal & Meanings | Dream Meanings & Interpreter | 28 |
+| Keywords (100) | dream,journal,diary,interpretation,meaning,lucid,sleep,symbols,recurring,nightmare,analysis,tracker | interpretation,dictionary,lucid,diary,sleep,nightmare,symbol,recurring,analyzer,tracker,log,decoder | 99 |
+
+Why: "dream journal", "dream meaning(s)", "dream interpreter" and "dream dictionary" are the phrases people type. Name + subtitle now cover dream, journal, AI, meanings and interpreter, so the keyword field is free for new terms. Apple combines words across fields, so "dream" + "dictionary" in different fields still matches "dream dictionary".
+
+Promotional text (can change anytime, no review): "Teeth falling out? Being chased? Speak your dream when you wake and get a thoughtful AI reading in seconds. Private, no account needed."
+
+What's New (1.0.1): "Thanks for using DreamPattern! This update adds small improvements and fixes. If you're enjoying it, a rating really helps."
+
+After two to three weeks, check App Store Connect → App Analytics → Sources and the Search Terms report (Apple Ads) and swap out keywords that bring no impressions.

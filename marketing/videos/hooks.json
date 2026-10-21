@@ -1,0 +1,84 @@
+{
+  "teeth-falling-out": "Dreamt your teeth were falling out?",
+  "being-chased": "Dreamt someone was chasing you?",
+  "falling": "Dreamt you were falling?",
+  "flying": "Dreamt you could fly?",
+  "snakes": "Dreamt about snakes?",
+  "drowning": "Dreamt you were drowning?",
+  "naked-in-public": "Dreamt you were naked in public?",
+  "late": "Dreamt you were late or missed a flight?",
+  "exam": "Still dreaming about exams years later?",
+  "death": "Dreamt about death?",
+  "ex-partner": "Dreamt about your ex?",
+  "pregnancy": "Dreamt you were pregnant?",
+  "house": "Dreamt you found a hidden room in your house?",
+  "car-out-of-control": "Dreamt your brakes stopped working?",
+  "spiders": "Dreamt about spiders?",
+  "dogs": "Dreamt about a dog?",
+  "cats": "Dreamt about a cat?",
+  "fire": "Dreamt about fire?",
+  "tsunami": "Dreamt a giant wave was coming?",
+  "lost": "Dreamt you were lost and couldn't find your way?",
+  "cant-run": "Dreamt you couldn't run or scream?",
+  "cheating": "Dreamt your partner was cheating?",
+  "baby": "Dreamt about a baby?",
+  "wedding": "Dreamt about a wedding?",
+  "dead-loved-one": "Dreamt about someone you've lost?",
+  "_general": [
+    {
+      "slug": "why-you-forget-dreams",
+      "kicker": "Sleep fact",
+      "hook": "Why do dreams vanish minutes after you wake up?",
+      "points": [
+        ["They fade fast", "Most dream memories are gone within minutes unless you rehearse them right away."],
+        ["Moving makes it worse", "Getting up and checking your phone pulls your attention away before the memory sticks."],
+        ["The fix", "Stay still, replay the dream with your eyes closed, then say or write it straight away."]
+      ],
+      "caption": "Ever lose a dream the second you wake up? Here's why, and how to keep it. Do you remember your dreams? 👇"
+    },
+    {
+      "slug": "remember-your-dreams",
+      "kicker": "3 tips",
+      "hook": "How to remember more of your dreams",
+      "points": [
+        ["1. Decide before sleep", "Tell yourself you'll remember a dream. It sounds silly, but intention helps."],
+        ["2. Don't move yet", "When you wake, keep your eyes closed and replay what you saw."],
+        ["3. Capture it fast", "Say it out loud or note it before you check your phone. Even one word helps."]
+      ],
+      "caption": "Try these tonight and tell me if you remember more tomorrow 🌙"
+    },
+    {
+      "slug": "recurring-dreams",
+      "kicker": "Recurring dreams",
+      "hook": "Having the same dream over and over?",
+      "points": [
+        ["You're not alone", "Many adults report at least one recurring dream."],
+        ["Look at the timing", "Recurring dreams often show up around stress, change or something unresolved."],
+        ["Track it", "Writing them down shows when they come back and what was going on in your life."]
+      ],
+      "caption": "What's your recurring dream? 👇 Mine is always being late for something."
+    },
+    {
+      "slug": "most-common-dreams",
+      "kicker": "Did you know",
+      "hook": "5 dreams almost everyone has had",
+      "points": [
+        ["Being chased", "One of the most widely reported dream themes worldwide."],
+        ["Falling, and teeth falling out", "Both show up again and again in dream surveys."],
+        ["Flying and being late", "One feels amazing, the other is pure stress."]
+      ],
+      "caption": "How many of these have you had? 👇"
+    },
+    {
+      "slug": "lucid-dreaming",
+      "kicker": "Lucid dreaming",
+      "hook": "Ever realised you were dreaming, inside the dream?",
+      "points": [
+        ["That's a lucid dream", "You become aware you're dreaming, and sometimes you can steer what happens."],
+        ["It's more common than you think", "Many people have had at least one, often without trying."],
+        ["A dream journal helps", "People who record their dreams tend to notice dream signs, and become lucid more often."]
+      ],
+      "caption": "Have you ever had a lucid dream? What did you do first? 👇"
+    }
+  ]
+}

@@ -17,3 +17,9 @@ ul{padding-left:22px}
 footer{padding:40px 16px 48px;color:var(--dim);font-size:14px}
 footer a{color:var(--dim);margin-right:16px}
 .card h2{margin-top:4px}
+.crumbs{margin:24px 0 -16px;font-size:14px}
+.crumbs a{color:var(--dim)}
+.button{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 18px;border-radius:10px;margin:4px 0 8px}
+.columns{columns:2;column-gap:24px}
+@media (max-width:480px){.columns{columns:1}}
+.cta{margin:32px 0}
