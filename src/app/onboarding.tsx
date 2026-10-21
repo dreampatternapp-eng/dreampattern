@@ -50,7 +50,7 @@ export default function Onboarding() {
     return (
       <Screen scroll={false} edges={['top', 'bottom']}>
         <View style={{ flex: 1, justifyContent: 'center', gap: space.lg }}>
-          <Text style={{ fontSize: 64, textAlign: 'center' }}>{c.emoji}</Text>
+          <Text style={{ fontSize: 64, textAlign: 'center', color: colors.gold }}>{c.emoji}</Text>
           <H1 style={{ textAlign: 'center' }}>{c.title}</H1>
           <Body dim style={{ textAlign: 'center' }}>
             {c.body}

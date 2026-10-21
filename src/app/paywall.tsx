@@ -71,7 +71,7 @@ export default function Paywall() {
       <Pressable onPress={() => router.back()} hitSlop={16} accessibilityLabel="Close" style={{ alignSelf: 'flex-end' }}>
         <Text style={{ color: colors.textDim, fontSize: 24 }}>✕</Text>
       </Pressable>
-      <Text style={{ fontSize: 56, textAlign: 'center' }}>✦</Text>
+      <Text style={{ fontSize: 56, textAlign: 'center', color: colors.gold }}>✦</Text>
       <H1 style={{ textAlign: 'center' }}>{headline}</H1>
       <View style={{ gap: space.sm, marginVertical: space.md }}>
         {FEATURES.map((f) => (
