@@ -7,6 +7,7 @@ import * as Sharing from 'expo-sharing';
 import { deleteDream, getDream, getInterpretation, getSetting, setSetting } from '@/lib/db';
 import { InterpretError, QuotaExceededError, interpretDream } from '@/lib/interpret';
 import { usePremium } from '@/lib/purchases';
+import { maybeAskForReview } from '@/lib/review';
 import type { Dream, Interpretation } from '@/lib/types';
 import { formatLong } from '@/lib/dates';
 import { colors, MOODS, space } from '@/lib/theme';
@@ -50,6 +51,8 @@ export default function EntryDetail() {
       if (!isPremium && (await getSetting(db, 'paywall_intro_shown')) !== '1') {
         await setSetting(db, 'paywall_intro_shown', '1');
         setTimeout(() => router.push({ pathname: '/paywall', params: { reason: 'intro' } }), 2500);
+      } else {
+        setTimeout(() => maybeAskForReview(db), 2500);
       }
     } catch (e) {
       if (e instanceof QuotaExceededError) {
