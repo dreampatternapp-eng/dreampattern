@@ -1,7 +1,7 @@
 """Builds the dream dictionary pages under site/dreams/ from symbols.json.
 
 Run from the repo root:  python3 marketing/dictionary/build.py
-Set APP_STORE_URL once the app is live so every page links to the App Store.
+Also builds the weekly SEO guides in marketing/guides/*.json (see docs/seo-weekly.md).
 """
 import html
 import json
@@ -12,10 +12,20 @@ ROOT = Path(__file__).resolve().parents[2]
 SITE = ROOT / "site"
 OUT = SITE / "dreams"
 BASE = "https://dreampattern.app"
-APP_STORE_URL = os.environ.get("APP_STORE_URL", "")
+APP_STORE_URL = os.environ.get(
+    "APP_STORE_URL", "https://apps.apple.com/us/app/dreampattern/id6825036931"
+)
 
 symbols = json.loads((Path(__file__).parent / "symbols.json").read_text())
+guides = sorted(
+    (json.loads(p.read_text()) for p in (ROOT / "marketing" / "guides").glob("*.json")),
+    key=lambda g: g["date"],
+    reverse=True,
+)
 by_slug = {s["slug"]: s for s in symbols}
+for g in guides:
+    assert g["slug"] not in by_slug, f"guide slug {g['slug']} clashes with a symbol"
+any_by_slug = {**by_slug, **{g["slug"]: g for g in guides}}
 e = html.escape
 
 
@@ -89,7 +99,48 @@ def symbol_page(s):
     return page(s["title"], s["description"], f"/dreams/{s['slug']}", body)
 
 
+def guide_page(g):
+    sections = "".join(f'<h2>{e(sec["h2"])}</h2>\n{sec["html"]}\n' for sec in g["sections"])
+    faq_html = "".join(f"<h3>{e(q)}</h3>\n<p>{e(a)}</p>\n" for q, a in g["faq"])
+    related = [any_by_slug[r] for r in g["related"] if r in any_by_slug]
+    rel = "".join(f'<li><a href="/dreams/{r["slug"]}">{e(r["title"])}</a></li>' for r in related)
+    article = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": g["title"],
+        "description": g["description"],
+        "datePublished": g["date"],
+        "dateModified": g.get("updated", g["date"]),
+        "mainEntityOfPage": f"{BASE}/dreams/{g['slug']}",
+        "author": {"@type": "Organization", "name": "DreamPattern", "url": BASE},
+        "publisher": {"@type": "Organization", "name": "DreamPattern", "url": BASE},
+    }
+    faq = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}}
+            for q, a in g["faq"]
+        ],
+    }
+    body = f"""<p class="dim crumbs"><a href="/dreams/">Dream dictionary</a> · Guide</p>
+<h1>{e(g["h1"])}</h1>
+{g["intro"]}
+{sections}{cta()}
+<h2>Frequently asked questions</h2>
+{faq_html}{"<h2>Keep reading</h2><ul>" + rel + "</ul>" if rel else ""}
+<p class="dim">DreamPattern is for reflection and journaling, not medical advice. If dreams or sleep are troubling you, talk to a doctor.</p>
+<script type="application/ld+json">{json.dumps(article)}</script>
+<script type="application/ld+json">{json.dumps(faq)}</script>"""
+    return page(g["title"], g["description"], f"/dreams/{g['slug']}", body)
+
+
 def index_page():
+    guide_list = ""
+    if guides:
+        guide_list = "<h2>Guides</h2><ul>" + "".join(
+            f'<li><a href="/dreams/{g["slug"]}">{e(g["title"])}</a></li>' for g in guides
+        ) + "</ul>"
     items = "".join(
         f'<li><a href="/dreams/{s["slug"]}">{e(s["name"])}</a></li>'
         for s in sorted(symbols, key=lambda s: s["name"].lower())
@@ -97,6 +148,7 @@ def index_page():
     body = f"""<h1>Dream dictionary</h1>
 <p>What does it mean when you dream about teeth falling out, being chased or flying? Here are the most common dream themes, what people often connect them with, and questions to help you reflect on your own dream.</p>
 <ul class="columns">{items}</ul>
+{guide_list}
 {cta()}"""
     return page(
         "Dream dictionary: common dreams and what they can mean",
@@ -110,14 +162,16 @@ def main():
     OUT.mkdir(exist_ok=True)
     for s in symbols:
         (OUT / f"{s['slug']}.html").write_text(symbol_page(s))
+    for g in guides:
+        (OUT / f"{g['slug']}.html").write_text(guide_page(g))
     (OUT / "index.html").write_text(index_page())
-    urls = ["/", "/dreams/"] + [f"/dreams/{s['slug']}" for s in symbols]
+    urls = ["/", "/dreams/"] + [f"/dreams/{g['slug']}" for g in guides] + [f"/dreams/{s['slug']}" for s in symbols]
     sitemap = "".join(f"<url><loc>{BASE}{u}</loc></url>" for u in urls)
     (SITE / "sitemap.xml").write_text(
         f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{sitemap}</urlset>\n'
     )
     (SITE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE}/sitemap.xml\n")
-    print(f"Built {len(symbols)} pages")
+    print(f"Built {len(symbols)} symbol pages and {len(guides)} guides")
 
 
 if __name__ == "__main__":
