@@ -41,6 +41,10 @@ export default function EntryDetail() {
 
   const runInterpretation = useCallback(async () => {
     if (!dream || !appUserId) return;
+    if ((await getSetting(db, 'ai_consent')) !== '1') {
+      if (!(await askAiConsent())) return;
+      await setSetting(db, 'ai_consent', '1');
+    }
     setLoading(true);
     setError(null);
     try {
@@ -167,4 +171,21 @@ export default function EntryDetail() {
       </Row>
     </Screen>
   );
+}
+
+// Apple 5.1.2(i): ask before dream text goes to a third-party AI.
+function askAiConsent(): Promise<boolean> {
+  return new Promise((resolve) => {
+    Alert.alert(
+      'Send this dream for a reading?',
+      'To write a reading, your dream text is sent to our AI provider, Anthropic. Our server does not store it. ' +
+        'Anthropic may keep it for up to 30 days for safety checks, then deletes it, and does not use it for training. ' +
+        'Your journal itself stays on this phone.',
+      [
+        { text: 'Not now', style: 'cancel', onPress: () => resolve(false) },
+        { text: 'Continue', onPress: () => resolve(true) },
+      ],
+      { cancelable: true, onDismiss: () => resolve(false) },
+    );
+  });
 }

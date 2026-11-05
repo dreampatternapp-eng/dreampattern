@@ -139,7 +139,7 @@ export default function Settings() {
 
       <Card>
         <H2>Your data</H2>
-        <Small>Your journal is stored only on this phone. Dream text is sent to our server only to create a reading and is not kept there.</Small>
+        <Small>Your journal is stored only on this phone. Dream text is sent to our server and our AI provider, Anthropic, only to create a reading. We do not keep it.</Small>
         <Button title="Export as text" variant="secondary" loading={busy === 'txt'} onPress={() => run('txt', () => exportText(db))} />
         <Button
           title={isPremium ? 'Export as PDF' : 'Export as PDF (Premium)'}
