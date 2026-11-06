@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { imageUri } from '@/lib/imageFiles';
 import { router, useLocalSearchParams } from 'expo-router';
 import type { PurchasesOffering, PurchasesPackage } from 'react-native-purchases';
 import { usePremium } from '@/lib/purchases';
@@ -9,6 +10,7 @@ import { Body, Button, H1, Screen, Small } from '@/components/ui';
 
 const FEATURES = [
   'Unlimited dream readings',
+  'Dream images: turn a dream into art, up to 30 a month',
   'Full patterns: every recurring symbol, person, place and feeling',
   'Pattern callbacks linking each dream to your history',
   'Weekly insight card',
@@ -16,7 +18,7 @@ const FEATURES = [
 ];
 
 export default function Paywall() {
-  const { reason } = useLocalSearchParams<{ reason?: string }>();
+  const { reason, image } = useLocalSearchParams<{ reason?: string; image?: string }>();
   const { getOffering, purchase, restore, isPremium, purchasesAvailable } = usePremium();
   const [offering, setOffering] = useState<PurchasesOffering | null>(null);
   const [selected, setSelected] = useState<PurchasesPackage | null>(null);
@@ -56,7 +58,9 @@ export default function Paywall() {
   };
 
   const headline =
-    reason === 'quota'
+    reason === 'image'
+      ? 'Turn every dream into art'
+      : reason === 'quota'
       ? "You've used this month's free readings"
       : reason === 'intro'
         ? 'Keep discovering your dreams'
@@ -71,7 +75,15 @@ export default function Paywall() {
       <Pressable onPress={() => router.back()} hitSlop={16} accessibilityLabel="Close" style={{ alignSelf: 'flex-end' }}>
         <Text style={{ color: colors.textDim, fontSize: 24 }}>✕</Text>
       </Pressable>
-      <Text style={{ fontSize: 56, textAlign: 'center', color: colors.gold }}>✦</Text>
+      {reason === 'image' && image ? (
+        <Image
+          source={{ uri: imageUri(image) }}
+          style={{ width: '60%', aspectRatio: 4 / 5, alignSelf: 'center', borderRadius: radius.lg }}
+          accessibilityLabel="Your first dream image"
+        />
+      ) : (
+        <Text style={{ fontSize: 56, textAlign: 'center', color: colors.gold }}>✦</Text>
+      )}
       <H1 style={{ textAlign: 'center' }}>{headline}</H1>
       <View style={{ gap: space.sm, marginVertical: space.md }}>
         {FEATURES.map((f) => (

@@ -2,3 +2,6 @@
 # The function does its own validation, quota and rate limiting.
 [functions.interpret]
 verify_jwt = false
+
+[functions.visualize]
+verify_jwt = false

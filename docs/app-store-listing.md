@@ -85,8 +85,9 @@ Data collected (all: purpose **App Functionality** only, **not linked** to the u
 
 | Apple category | Data type | Why |
 |---|---|---|
-| User Content | Other User Content | Dream text sent for an AI reading (passed to Anthropic, not stored by us) |
-| Identifiers | User ID | Anonymous app ID used to count free readings and check Premium |
+| User Content | Other User Content | Dream text sent for an AI reading or dream image (passed to Anthropic; for images, only a name-free scene description goes on to Google; not stored by us) |
+| Identifiers | User ID | Anonymous app ID used to count free readings and images and check Premium |
+| Identifiers | Device ID | Random keychain ID, used only so the one free dream image can't be claimed again by reinstalling (from 1.1) |
 | Purchases | Purchase History | RevenueCat checks subscription status |
 
 Not collected: contact info, health, location, contacts, browsing, search, diagnostics, usage data, audio (speech is converted by the phone's speech service, never sent to us).
@@ -131,3 +132,21 @@ Promotional text (can change anytime, no review): "Teeth falling out? Being chas
 What's New (1.0.1): "Thanks for using DreamPattern! This update adds small improvements and fixes. If you're enjoying it, a rating really helps."
 
 After two to three weeks, check App Store Connect → App Analytics → Sources and the Search Terms report (Apple Ads) and swap out keywords that bring no impressions.
+
+## Version 1.1 update: dream images
+
+Ships together with the 1.0.1 search changes above (use the 1.0.1 name, subtitle and keywords for 1.1).
+
+What's New (1.1): "New: dream images. Tap Visualize on any dream and watch it become a painting. Your first one is free; Premium members get up to 30 a month. Images stay on your phone, and you can share them with your reading."
+
+Description, add after the AI reading paragraph: "Turn a dream into art. DreamPattern paints a dreamlike picture of the scene, which you can keep with your entry or share. Your first dream image is free."
+
+Free/Premium line: "Free includes unlimited journaling, 3 AI readings a month and your first dream image. Premium unlocks unlimited readings, up to 30 dream images a month, every recurring pattern, callbacks to past dreams, a weekly insight card, and PDF export."
+
+Subscription description (both products): "Unlimited readings, dream images and full patterns."
+
+App Privacy label: add **Identifiers → Device ID** (App Functionality, not linked, not tracking). User Content row stays, wording updated above.
+
+Screenshot: add "A dream image" after the AI reading.
+
+Review notes, add: "Dream images: open any saved dream and tap 'Visualize this dream'. The first image is free per device; after that it is Premium (up to 30 a month). Safeguards for guideline 1.2: users cannot upload photos, so no real person can be depicted; our server first rewrites the dream with Anthropic's model into a scene description with no names, real people, text, nudity or graphic violence, and only that description is sent to Google's Gemini image model with its safety filters set to block sexual content at the lowest threshold. Every image is labeled 'AI-generated', can be reported to us from the Report button (email to support@dreampattern.app) and removed. Images are stored only on the device and are never shared with other users."

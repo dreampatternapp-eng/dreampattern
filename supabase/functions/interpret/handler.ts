@@ -1,15 +1,10 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { z } from 'zod/v4';
+import { clientIp, isPremium, json, type Store } from '../_shared/entitlement.ts';
 import { InterpretationSchema, MODEL, SYSTEM_PROMPT, buildUserMessage } from './prompt.ts';
 
-/** Storage for counters and the entitlement cache (Postgres in production, in-memory in tests). */
-export interface Store {
-  getCount(key: string): Promise<number>;
-  increment(key: string): Promise<number>;
-  getCachedEntitlement(userId: string): Promise<boolean | null>;
-  cacheEntitlement(userId: string, active: boolean): Promise<void>;
-}
+export type { Store };
 
 export interface Deps {
   anthropic: Anthropic;
@@ -35,9 +30,6 @@ const RequestSchema = z.object({
     .default([]),
 });
 
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
-
 export async function handleRequest(req: Request, deps: Deps): Promise<Response> {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   const parsed = RequestSchema.safeParse(await req.json().catch(() => null));
@@ -47,7 +39,7 @@ export async function handleRequest(req: Request, deps: Deps): Promise<Response>
   const now = (deps.now ?? (() => new Date()))();
 
   // Coarse abuse guard: anonymous ids are free to mint, IPs less so.
-  const ip = (req.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim();
+  const ip = clientIp(req);
   const day = now.toISOString().slice(0, 10);
   const ipKey = `ip:${ip}:${day}`;
   if ((await store.getCount(ipKey)) >= (deps.ipDailyLimit ?? 60)) return json({ error: 'rate_limited' }, 429);
@@ -90,24 +82,4 @@ export async function handleRequest(req: Request, deps: Deps): Promise<Response>
     pattern_callback: premium ? out.pattern_callback : null,
     usage: { used: newUsed, limit: premium ? null : limit },
   });
-}
-
-/** Checks the "premium" entitlement with RevenueCat's REST API, cached for 5 minutes. */
-async function isPremium(userId: string, deps: Deps, skipCache = false): Promise<boolean> {
-  if (userId.startsWith('$local:') || !deps.revenueCatSecretKey) return false;
-  const cached = skipCache ? null : await deps.store.getCachedEntitlement(userId);
-  if (cached !== null) return cached;
-
-  const res = await (deps.fetchFn ?? fetch)(
-    `https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(userId)}`,
-    { headers: { Authorization: `Bearer ${deps.revenueCatSecretKey}` } },
-  );
-  if (!res.ok) return false;
-  const body = (await res.json()) as {
-    subscriber?: { entitlements?: Record<string, { expires_date: string | null }> };
-  };
-  const ent = body.subscriber?.entitlements?.premium;
-  const active = !!ent && (ent.expires_date === null || new Date(ent.expires_date) > new Date());
-  await deps.store.cacheEntitlement(userId, active);
-  return active;
 }

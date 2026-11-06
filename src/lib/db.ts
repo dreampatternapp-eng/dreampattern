@@ -2,12 +2,15 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import * as Crypto from 'expo-crypto';
 import type { Dream, Interpretation, InterpretationSymbol, PatternItem } from './types';
 import { daysAgo, toISODate } from './dates';
+import { deleteAllImageFiles, deleteImageFile } from './imageFiles';
 
 export const DB_NAME = 'dreampattern.db';
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 /** Runs on app start via <SQLiteProvider onInit>. Each version step is applied once. */
 export async function migrate(db: SQLiteDatabase): Promise<void> {
+  // Per-connection setting: without it, deleting a dream leaves its reading and pattern rows behind.
+  await db.execAsync('PRAGMA foreign_keys = ON');
   const row = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
   let version = row?.user_version ?? 0;
   if (version >= SCHEMA_VERSION) return;
@@ -56,6 +59,18 @@ export async function migrate(db: SQLiteDatabase): Promise<void> {
       );
     `);
     version = 1;
+  }
+
+  if (version === 1) {
+    // Dream images (v1.1). The picture itself is a file in the app's documents folder; only its name is stored.
+    await db.execAsync(`
+      CREATE TABLE dream_images (
+        dream_id TEXT PRIMARY KEY NOT NULL REFERENCES dreams(id) ON DELETE CASCADE,
+        file TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      );
+    `);
+    version = 2;
   }
 
   await db.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
@@ -116,11 +131,37 @@ export async function setDreamTitle(db: SQLiteDatabase, id: string, title: strin
 }
 
 export async function deleteDream(db: SQLiteDatabase, id: string): Promise<void> {
+  const img = await getDreamImageFile(db, id);
+  await db.runAsync('DELETE FROM dream_images WHERE dream_id = ?', id);
   await db.runAsync('DELETE FROM dreams WHERE id = ?', id);
+  if (img) deleteImageFile(img);
 }
 
 export async function deleteAllData(db: SQLiteDatabase): Promise<void> {
-  await db.execAsync('DELETE FROM elements; DELETE FROM interpretations; DELETE FROM dreams; DELETE FROM settings;');
+  await db.execAsync(
+    'DELETE FROM dream_images; DELETE FROM elements; DELETE FROM interpretations; DELETE FROM dreams; DELETE FROM settings;',
+  );
+  deleteAllImageFiles();
+}
+
+export async function getDreamImageFile(db: SQLiteDatabase, dreamId: string): Promise<string | null> {
+  const r = await db.getFirstAsync<{ file: string }>('SELECT file FROM dream_images WHERE dream_id = ?', dreamId);
+  return r?.file ?? null;
+}
+
+export async function saveDreamImageFile(db: SQLiteDatabase, dreamId: string, file: string): Promise<void> {
+  const old = await getDreamImageFile(db, dreamId);
+  await db.runAsync(
+    'INSERT OR REPLACE INTO dream_images (dream_id, file, created_at) VALUES (?, ?, ?)',
+    dreamId, file, new Date().toISOString(),
+  );
+  if (old && old !== file) deleteImageFile(old);
+}
+
+export async function removeDreamImage(db: SQLiteDatabase, dreamId: string): Promise<void> {
+  const old = await getDreamImageFile(db, dreamId);
+  await db.runAsync('DELETE FROM dream_images WHERE dream_id = ?', dreamId);
+  if (old) deleteImageFile(old);
 }
 
 export async function getDream(db: SQLiteDatabase, id: string): Promise<Dream | null> {
