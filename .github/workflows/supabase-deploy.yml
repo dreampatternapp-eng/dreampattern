@@ -3,6 +3,7 @@
 # undoes a bad one). Database migrations only run when started by hand,
 # because they change production data.
 # Needs repo secrets SUPABASE_ACCESS_TOKEN and SUPABASE_DB_PASSWORD.
+# Optional repo secret GEMINI_API_KEY is copied into the function secrets on each deploy (dream images).
 name: Supabase deploy
 
 on:
@@ -19,6 +20,7 @@ on:
 env:
   SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
   SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
   # DreamPattern project. Never the Brady Remodeling project.
   PROJECT_REF: cvezzeawnyogurkaejau
 
@@ -37,6 +39,10 @@ jobs:
       - name: Apply migrations
         if: inputs.migrate
         run: supabase db push --include-all
+
+      - name: Set the Gemini key for dream images
+        if: env.GEMINI_API_KEY != ''
+        run: supabase secrets set GEMINI_API_KEY="$GEMINI_API_KEY" --project-ref "$PROJECT_REF"
 
       - name: Deploy edge functions
         run: supabase functions deploy --project-ref "$PROJECT_REF"
