@@ -3,6 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
 import { z } from 'zod';
 import { API_URL } from './config';
+import { fetchWithRetry } from './net';
 import { saveDreamImageFile } from './db';
 import { writeImageFile } from './imageFiles';
 import type { Dream } from './types';
@@ -56,33 +57,20 @@ export async function visualizeDream(
   if (!API_URL) throw new VisualizeError('Image server is not configured yet (EXPO_PUBLIC_API_URL).');
 
   const device_id = await deviceId();
-  const body = JSON.stringify({
-    app_user_id: opts.appUserId,
-    device_id,
-    dream: { text: dream.body, title: dream.title || null, mood: dream.mood },
-  });
-  // A picture takes 15-25 seconds, and iOS sometimes drops a long request mid-flight
-  // ("The network connection was lost", often on a reused keep-alive connection).
-  // Retrying is safe: the server only counts an image once it is delivered.
-  let res: Response | undefined;
-  let lastError: unknown;
-  for (let attempt = 0; attempt < 3 && !res; attempt++) {
-    if (attempt > 0) await new Promise((r) => setTimeout(r, 1500 * attempt));
-    try {
-      res = await fetch(`${API_URL}/functions/v1/visualize`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body,
-      });
-    } catch (e) {
-      lastError = e;
-    }
-  }
-  if (!res) {
-    const why = lastError instanceof Error ? lastError.message.slice(0, 60) : '';
-    throw new VisualizeError(
-      `Couldn't reach the server. Check your connection and try again.${why ? ` (${why})` : ''}`,
-    );
+  let res: Response;
+  try {
+    res = await fetchWithRetry(`${API_URL}/functions/v1/visualize`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        app_user_id: opts.appUserId,
+        device_id,
+        dream: { text: dream.body, title: dream.title || null, mood: dream.mood },
+      }),
+    });
+  } catch (e) {
+    const why = e instanceof Error ? e.message.slice(0, 80) : '';
+    throw new VisualizeError(`Couldn't reach the server. Try again when you're online.${why ? ` (${why})` : ''}`);
   }
 
   if (res.status === 402) throw new ImagePremiumRequiredError('Dream images are part of Premium.');

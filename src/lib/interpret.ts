@@ -1,6 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { z } from 'zod';
 import { API_URL } from './config';
+import { fetchWithRetry } from './net';
 import { getInterpretation, interpretedDreamCount, recurringElements, saveInterpretation } from './db';
 import type { Dream, Interpretation } from './types';
 
@@ -47,7 +48,7 @@ export async function interpretDream(
 
   let res: Response;
   try {
-    res = await fetch(`${API_URL}/functions/v1/interpret`, {
+    res = await fetchWithRetry(`${API_URL}/functions/v1/interpret`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
