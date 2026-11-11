@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { setSetting } from '@/lib/db';
-import { WHATS_NEW_KEY } from '@/lib/whatsNew';
+import { SAMPLE_DREAM_IMAGE, SEEN_IMAGES_INTRO } from '@/lib/sampleImage';
 import { requestReminderPermission, scheduleMorningReminder } from '@/lib/reminders';
 import { Body, Button, H1, Screen, Small } from '@/components/ui';
-import { colors, space } from '@/lib/theme';
+import { colors, radius, space } from '@/lib/theme';
 
-const CARDS = [
+const CARDS: { emoji?: string; image?: number; title: string; body: string }[] = [
   {
     emoji: '🎙️',
     title: 'Catch it before it fades',
@@ -20,9 +20,9 @@ const CARDS = [
     body: 'Get a reading of each dream, then watch recurring symbols, people and places emerge over weeks.',
   },
   {
-    emoji: '🎨',
-    title: 'See your dream as a painting',
-    body: 'Tap Visualize on any dream to turn it into dreamlike art. Your first image is free.',
+    image: SAMPLE_DREAM_IMAGE,
+    title: 'See your dreams come alive',
+    body: 'Tap Visualize on any dream and watch it become a painting. Your first one is free.',
   },
   {
     emoji: '🔒',
@@ -44,8 +44,8 @@ export default function Onboarding() {
         await setSetting(db, 'reminder', '07:00');
       }
       await setSetting(db, 'onboarded', '1');
-      // New installs learn about dream images here, so they skip the update carousel.
-      await setSetting(db, WHATS_NEW_KEY, '1');
+      // Onboarding already introduced dream images, so the one-time "What's new" carousel is skipped.
+      await setSetting(db, SEEN_IMAGES_INTRO, '1');
       router.replace('/');
       router.push('/capture');
     } finally {
@@ -58,7 +58,16 @@ export default function Onboarding() {
     return (
       <Screen scroll={false} edges={['top', 'bottom']}>
         <View style={{ flex: 1, justifyContent: 'center', gap: space.lg }}>
-          <Text style={{ fontSize: 64, textAlign: 'center', color: colors.gold }}>{c.emoji}</Text>
+          {c.image ? (
+            <Image
+              source={c.image}
+              style={{ width: '80%', maxHeight: 340, aspectRatio: 4 / 5, alignSelf: 'center', borderRadius: radius.lg }}
+              resizeMode="cover"
+              accessibilityLabel="Example dream painting: a child running toward a sunrise and a rainbow, away from a storm"
+            />
+          ) : (
+            <Text style={{ fontSize: 64, textAlign: 'center', color: colors.gold }}>{c.emoji}</Text>
+          )}
           <H1 style={{ textAlign: 'center' }}>{c.title}</H1>
           <Body dim style={{ textAlign: 'center' }}>
             {c.body}

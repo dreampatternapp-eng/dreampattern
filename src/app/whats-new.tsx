@@ -1,132 +1,111 @@
 import { useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { listDreams, setSetting } from '@/lib/db';
-import { Body, Button, H1, Screen } from '@/components/ui';
-import { WHATS_NEW_KEY } from '@/lib/whatsNew';
+import { listDreams } from '@/lib/db';
+import { usePremium } from '@/lib/purchases';
+import { SAMPLE_DREAM_IMAGE } from '@/lib/sampleImage';
+import { Body, Button, H1, Screen, Small } from '@/components/ui';
 import { colors, radius, space } from '@/lib/theme';
 
-
-const a = StyleSheet.create({
-  frame: {
-    alignSelf: 'center',
-    width: 240,
-    height: 240,
-    borderRadius: radius.lg,
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: space.md,
-    padding: space.lg,
-  },
-  big: { fontSize: 88 },
-  sparkle: { color: colors.gold, fontSize: 22, letterSpacing: 6 },
-  mockText: { backgroundColor: colors.cardAlt, borderRadius: radius.md, padding: space.md, alignSelf: 'stretch' },
-  mockLine: { color: colors.textDim, fontSize: 14 },
-  mockButton: {
-    backgroundColor: colors.accentSoft,
-    borderRadius: radius.pill,
-    paddingVertical: space.md,
-    alignSelf: 'stretch',
-    alignItems: 'center',
-  },
-  mockButtonText: { color: colors.text, fontWeight: '700', fontSize: 15 },
-  dots: { flexDirection: 'row', justifyContent: 'center', gap: 6, marginVertical: space.lg },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.border },
-});
-
-type Slide = { title: string; body: string; art: React.ReactNode };
-
-const SLIDES: Slide[] = [
-  {
-    title: 'New: dream images',
-    body: 'Turn any dream into a painting. DreamPattern paints the scene in a soft, dreamlike style you can keep with your entry.',
-    art: (
-      <View style={[a.frame, { backgroundColor: '#2B2160' }]}>
-        <Text style={a.big}>🌙</Text>
-        <Text style={a.sparkle}>✦ ✧ ✦</Text>
-      </View>
-    ),
-  },
-  {
-    title: 'One tap from any dream',
-    body: 'Open a saved dream and tap Visualize. Your dream is rewritten into a safe scene first, so the picture never includes names or real people.',
-    art: (
-      <View style={a.frame}>
-        <View style={a.mockText}>
-          <Text style={a.mockLine}>I was running toward a rainbow…</Text>
-        </View>
-        <View style={a.mockButton}>
-          <Text style={a.mockButtonText}>✦ Visualize this dream</Text>
-        </View>
-      </View>
-    ),
-  },
-  {
-    title: 'Your first one is free',
-    body: 'Try it on any dream. Premium members get up to 30 images a month. Images stay on your phone, and you can share them with your reading.',
-    art: (
-      <View style={[a.frame, { backgroundColor: '#3A2F7A' }]}>
-        <Text style={a.big}>🎁</Text>
-      </View>
-    ),
-  },
-];
-
-/** One-time carousel that introduces dream images to people updating from 1.0. */
+/**
+ * One-time "What's new" carousel for people who already used the app before dream images shipped.
+ * New users see the same feature as a card in onboarding instead (both set `seen_images_intro`).
+ */
 export default function WhatsNew() {
   const db = useSQLiteContext();
+  const { isPremium } = usePremium();
   const { width } = useWindowDimensions();
   const pageWidth = width - space.xl * 2;
   const scroller = useRef<ScrollView>(null);
   const [page, setPage] = useState(0);
-  const last = page === SLIDES.length - 1;
 
-  const close = async (tryIt: boolean) => {
-    await setSetting(db, WHATS_NEW_KEY, '1');
-    router.back();
-    if (!tryIt) return;
-    const [latest] = await listDreams(db, { limit: 1 });
-    if (latest) router.push({ pathname: '/entry/[id]', params: { id: latest.id } });
-    else router.push('/capture');
+  const slides = [
+    {
+      key: 'see',
+      title: 'New: see your dreams',
+      body: 'DreamPattern can now paint any dream you record, in the same dreamy style as the rest of your journal.',
+      caption: '"Running from a storm toward a rainbow"',
+    },
+    {
+      key: 'how',
+      emoji: '✦',
+      title: 'One tap on any dream',
+      body: 'Open a dream and tap "Visualize this dream". In a few seconds it becomes a painting you can keep or share with your reading.',
+    },
+    {
+      key: 'free',
+      emoji: '🎁',
+      title: isPremium ? 'Included in your Premium' : 'Your first one is free',
+      body: isPremium
+        ? 'Premium includes up to 30 dream images a month. Images are saved only on this phone.'
+        : 'Try it on any dream at no cost. Premium members get up to 30 a month. Images are saved only on this phone.',
+    },
+  ];
+  const last = page === slides.length - 1;
+
+  const goTo = (i: number) => {
+    scroller.current?.scrollTo({ x: i * pageWidth, animated: true });
+    setPage(i);
   };
 
-  const next = () => {
-    if (last) return close(true);
-    scroller.current?.scrollTo({ x: (page + 1) * pageWidth, animated: true });
-    setPage(page + 1);
+  const tryIt = async () => {
+    const [latest] = await listDreams(db, { limit: 1 });
+    router.back();
+    if (latest) router.push(`/entry/${latest.id}`);
+    else router.push('/capture');
   };
 
   return (
     <Screen scroll={false} edges={['top', 'bottom']}>
+      <View style={{ alignItems: 'flex-end' }}>
+        <Pressable onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
+          <Text style={{ color: colors.textDim, fontSize: 16 }}>Not now</Text>
+        </Pressable>
+      </View>
+
       <ScrollView
         ref={scroller}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={(e) => setPage(Math.round(e.nativeEvent.contentOffset.x / pageWidth))}
         style={{ flex: 1 }}
+        onMomentumScrollEnd={(e) => setPage(Math.round(e.nativeEvent.contentOffset.x / pageWidth))}
       >
-        {SLIDES.map((sl) => (
-          <View key={sl.title} style={{ width: pageWidth, justifyContent: 'center', gap: space.lg }}>
-            {sl.art}
-            <H1 style={{ textAlign: 'center' }}>{sl.title}</H1>
+        {slides.map((s) => (
+          <View key={s.key} style={{ width: pageWidth, justifyContent: 'center', gap: space.lg }}>
+            {s.key === 'see' ? (
+              <Image
+                source={SAMPLE_DREAM_IMAGE}
+                style={{ width: '100%', maxHeight: 360, aspectRatio: 4 / 5, alignSelf: 'center', borderRadius: radius.lg }}
+                resizeMode="cover"
+                accessibilityLabel="Example dream painting: a child running across a meadow toward a sunrise and a rainbow, away from a storm"
+              />
+            ) : (
+              <Text style={{ fontSize: 64, textAlign: 'center', color: colors.gold }}>{s.emoji}</Text>
+            )}
+            {s.caption && <Small style={{ textAlign: 'center', fontStyle: 'italic' }}>{s.caption}</Small>}
+            <H1 style={{ textAlign: 'center' }}>{s.title}</H1>
             <Body dim style={{ textAlign: 'center' }}>
-              {sl.body}
+              {s.body}
             </Body>
           </View>
         ))}
       </ScrollView>
-      <View style={a.dots}>
-        {SLIDES.map((_, i) => (
-          <View key={i} style={[a.dot, i === page && { backgroundColor: colors.accent }]} />
+
+      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 6, marginVertical: space.lg }}>
+        {slides.map((s, i) => (
+          <View
+            key={s.key}
+            style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: i === page ? colors.accent : colors.border }}
+          />
         ))}
       </View>
-      <Button title={last ? 'Try it on a dream' : 'Next'} onPress={next} />
-      <Button title="Maybe later" variant="ghost" onPress={() => close(false)} />
+      {last ? (
+        <Button title="✦ Try it on a dream" onPress={tryIt} />
+      ) : (
+        <Button title="Next" onPress={() => goTo(page + 1)} />
+      )}
     </Screen>
   );
 }
