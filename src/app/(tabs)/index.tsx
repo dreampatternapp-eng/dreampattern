@@ -1,8 +1,9 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { currentStreak, listDreams, topElements } from '@/lib/db';
+import { currentStreak, getSetting, listDreams, topElements } from '@/lib/db';
+import { WHATS_NEW_KEY } from '@/lib/whatsNew';
 import { weeklyInsight } from '@/lib/insights';
 import { usePremium } from '@/lib/purchases';
 import type { Dream } from '@/lib/types';
@@ -17,10 +18,15 @@ export default function Home() {
   const [recent, setRecent] = useState<Dream[]>([]);
   const [streak, setStreak] = useState(0);
   const [insight, setInsight] = useState<string | null>(null);
+  const whatsNewChecked = useRef(false);
 
   useFocusEffect(
     useCallback(() => {
       (async () => {
+        if (!whatsNewChecked.current) {
+          whatsNewChecked.current = true;
+          if ((await getSetting(db, WHATS_NEW_KEY)) !== '1') router.push('/whats-new');
+        }
         const [r, s, week, weekDreams] = await Promise.all([
           listDreams(db, { limit: 5 }),
           currentStreak(db),
