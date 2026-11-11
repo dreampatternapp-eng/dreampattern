@@ -29,13 +29,18 @@ export class VisualizeError extends Error {}
  * A random id kept in the iOS keychain, which survives deleting and reinstalling the app.
  * The server uses it only so the one free image can't be claimed again by reinstalling.
  */
-async function deviceId(): Promise<string> {
-  const key = 'dp_device_id';
-  const existing = await SecureStore.getItemAsync(key);
-  if (existing) return existing;
-  const id = Crypto.randomUUID();
-  await SecureStore.setItemAsync(key, id, { keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK });
-  return id;
+async function deviceId(): Promise<string | undefined> {
+  // Never let a keychain problem block the image: the server treats the id as optional.
+  try {
+    const key = 'dp_device_id';
+    const existing = await SecureStore.getItemAsync(key);
+    if (existing) return existing;
+    const id = Crypto.randomUUID();
+    await SecureStore.setItemAsync(key, id, { keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK });
+    return id;
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -50,6 +55,7 @@ export async function visualizeDream(
 ): Promise<{ file: string; usage: { used: number; limit: number | null } }> {
   if (!API_URL) throw new VisualizeError('Image server is not configured yet (EXPO_PUBLIC_API_URL).');
 
+  const device_id = await deviceId();
   let res: Response;
   try {
     res = await fetch(`${API_URL}/functions/v1/visualize`, {
@@ -57,12 +63,13 @@ export async function visualizeDream(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         app_user_id: opts.appUserId,
-        device_id: await deviceId(),
+        device_id,
         dream: { text: dream.body, title: dream.title || null, mood: dream.mood },
       }),
     });
-  } catch {
-    throw new VisualizeError("Couldn't reach the server. Try again when you're online.");
+  } catch (e) {
+    const why = e instanceof Error ? e.message.slice(0, 80) : '';
+    throw new VisualizeError(`Couldn't reach the server. Try again when you're online.${why ? ` (${why})` : ''}`);
   }
 
   if (res.status === 402) throw new ImagePremiumRequiredError('Dream images are part of Premium.');
