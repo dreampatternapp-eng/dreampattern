@@ -135,7 +135,15 @@ After two to three weeks, check App Store Connect → App Analytics → Sources 
 
 ## Version 1.1 update: dream images
 
-Ships together with the 1.0.1 search changes above (use the 1.0.1 name, subtitle and keywords for 1.1).
+Ships together with the search changes below. The ASO agent's approved values (2026-11-11) replace the older 1.0.1 proposal above; enter these in App Store Connect on the 1.1.0 version page (name, subtitle and keywords are version metadata, not part of the build):
+
+| Field | Live (1.0) | 1.1.0 (approved) | Length |
+|---|---|---|---|
+| Name (30) | DreamPattern | DreamPattern: Dream Journal | 27 |
+| Subtitle (30) | AI Dream Journal & Meanings | Dream Interpretation & Meaning | 30 |
+| Keywords (100) | dream,journal,diary,interpretation,meaning,lucid,sleep,symbols,recurring,nightmare,analysis,tracker | ai,dictionary,diary,lucid,sleep,symbols,recurring,nightmare,analysis,tracker,interpreter,decode | 95 |
+
+The in-app rating prompt (after a reading, once 3 dreams are saved) is already in the 1.1.0 build.
 
 What's New (1.1): "New: dream images. Tap Visualize on any dream and watch it become a painting. Your first one is free; Premium members get up to 30 a month. Images stay on your phone, and you can share them with your reading."
 
