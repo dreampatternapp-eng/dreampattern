@@ -2,9 +2,9 @@
   "name": "dreampattern-server-tests",
   "private": true,
   "type": "module",
-  "description": "Node tests for supabase/functions/interpret/handler.ts (the edge function itself runs on Deno).",
+  "description": "Node tests for the edge function handlers in supabase/functions (the functions themselves run on Deno).",
   "scripts": {
-    "test": "esbuild ../supabase/functions/interpret/handler.ts --bundle --format=esm --platform=node --packages=external --outfile=.build/handler.mjs --log-level=warning && node --test *.test.mjs"
+    "test": "esbuild ../supabase/functions/interpret/handler.ts ../supabase/functions/visualize/handler.ts --bundle --format=esm --platform=node --packages=external --outdir=.build --entry-names=[dir] --log-level=warning && node --test *.test.mjs"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.134.0",

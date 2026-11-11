@@ -13,11 +13,11 @@
 <header><img src="/icon.png" alt=""><a href="/">DreamPattern</a></header>
 <main>
 <h1>Privacy Policy</h1>
-<p class="dim">Effective October 30, 2026</p>
+<p class="dim">Effective November 6, 2026</p>
 <p>DreamPattern is a dream journal app made by Robert Brady ("we", "us"). This policy explains what data the app uses, where it goes, and the choices you have. The short version: your journal stays on your phone, we have no accounts, and we don't sell, share for advertising, or track you.</p>
 
 <h2>Data stored only on your device</h2>
-<p>Your dream entries, titles, moods, tags, readings, and settings are stored in a database on your phone. We cannot see them. They are not uploaded to us and are not backed up by us. If you delete the app or use <strong>Settings → Delete all data</strong>, they are erased.</p>
+<p>Your dream entries, titles, moods, tags, readings, dream images, and settings are stored in a database on your phone. We cannot see them. They are not uploaded to us and are not backed up by us. If you delete the app or use <strong>Settings → Delete all data</strong>, they are erased.</p>
 
 <h2>When you ask for an AI reading</h2>
 <p>Readings are optional. When you request one, the app sends the following over an encrypted connection to our server, which passes it to our AI provider, Anthropic, to write the reading:</p>
@@ -28,13 +28,22 @@
 </ul>
 <p>Our server does not store or log your dream text. Anthropic processes it to produce the reading under its own <a href="https://www.anthropic.com/legal/privacy">privacy policy</a> and commercial terms, which do not allow it to train its models on this data. Anthropic may keep the request for a limited time, generally up to 30 days (longer only if it is flagged for a safety review), and then deletes it. The app asks for your permission before it sends your first dream for a reading. The reading is returned to your phone and saved there.</p>
 
+<h2>When you ask for a dream image</h2>
+<p>Dream images are optional. When you request one, the app sends your dream text, title and mood, the anonymous app ID, and a random device ID (see below) over an encrypted connection to our server. Our server then:</p>
+<ul>
+<li>sends the dream to Anthropic, which writes a short scene description for a picture. The description leaves out names and identifying details;</li>
+<li>sends <strong>only that scene description</strong>, never your dream text, to Google's Gemini image model, which paints the picture.</li>
+</ul>
+<p>Our server does not store or log your dream text, the scene description, or the picture. Anthropic handles the dream as described above. Google processes the scene description under the <a href="https://ai.google.dev/gemini-api/terms">Gemini API terms</a> for paid services, which say Google does not use it to improve its products; Google logs requests for a limited time only to detect misuse. Images are labeled as AI-generated and carry Google's invisible SynthID watermark. The app asks for your permission before your first dream image. The picture is saved only on your phone, and you can remove or report it at any time.</p>
+
 <h2>What our server keeps</h2>
 <ul>
 <li><strong>Anonymous app ID and monthly reading count.</strong> The free plan includes 3 readings a month, so we count readings per anonymous ID. These counts are deleted after 13 months.</li>
+<li><strong>Dream image counts.</strong> The free plan includes one dream image, so we record that the anonymous app ID and the device ID have used it. Premium image counts per month are deleted after 13 months.</li>
 <li><strong>Your IP address with a daily request count.</strong> This limits abuse and is deleted after 30 days.</li>
 <li><strong>Whether your anonymous ID has Premium,</strong> checked with RevenueCat and cached briefly. Cached entries are deleted after 30 days.</li>
 </ul>
-<p>The anonymous app ID is created by the app. It is not your name, email, or advertising identifier, and we don't link it to them.</p>
+<p>The anonymous app ID is created by the app. The device ID is a random number the app keeps in your phone's keychain, so it stays the same if you reinstall the app; it is used only to count the free dream image. Neither is your name, email, or advertising identifier, and we don't link them to those.</p>
 
 <h2>Voice input</h2>
 <p>If you speak a dream instead of typing, speech is converted to text on your phone when your device supports it. Otherwise your phone's speech service (Apple or Google) processes the audio under their privacy policies. We never receive your audio.</p>
@@ -53,10 +62,10 @@
 </ul>
 
 <h2>Your choices and rights</h2>
-<p>You can use DreamPattern without ever requesting a reading, in which case nothing about your dreams leaves your phone. You can delete everything on your device at any time. Because the data on our server is anonymous, we usually can't tie it to you, but if you'd like it deleted, email us your request and we'll help. Depending on where you live (for example the EU, UK, or California), you may have rights to access, delete, or object to processing of your personal data; contact us to use them.</p>
+<p>You can use DreamPattern without ever requesting a reading or image, in which case nothing about your dreams leaves your phone. You can delete everything on your device at any time. Because the data on our server is anonymous, we usually can't tie it to you, but if you'd like it deleted, email us your request and we'll help. Depending on where you live (for example the EU, UK, or California), you may have rights to access, delete, or object to processing of your personal data; contact us to use them.</p>
 
 <h2>If something goes wrong</h2>
-<p>Your journal never leaves your phone except for a reading, and our server keeps only the anonymous data above, protected with encrypted connections and access controls. If a security breach ever exposes personal data from DreamPattern, we will tell affected people as the law requires, with a notice in the app and on this website (we have no email addresses to write to).</p>
+<p>Your journal never leaves your phone except for a reading or dream image you ask for, and our server keeps only the anonymous data above, protected with encrypted connections and access controls. If a security breach ever exposes personal data from DreamPattern, we will tell affected people as the law requires, with a notice in the app and on this website (we have no email addresses to write to).</p>
 
 <h2>Children</h2>
 <p>DreamPattern is not directed at children under 13, and we do not knowingly collect personal data from them.</p>

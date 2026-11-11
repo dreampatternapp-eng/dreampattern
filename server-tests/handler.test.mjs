@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import Anthropic from '@anthropic-ai/sdk';
-import { handleRequest } from './.build/handler.mjs';
+import { handleRequest } from './.build/interpret.js';
 
 const reading = {
   title: 'The Rising Tide',

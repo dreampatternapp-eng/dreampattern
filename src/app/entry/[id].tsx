@@ -1,16 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Linking, Text, View } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
-import { deleteDream, getDream, getInterpretation, getSetting, setSetting } from '@/lib/db';
+import { deleteDream, getDream, getDreamImageFile, getInterpretation, getSetting, removeDreamImage, setSetting } from '@/lib/db';
+import { imageExists, imageUri } from '@/lib/imageFiles';
+import { ImageCapError, ImagePremiumRequiredError, VisualizeError, visualizeDream } from '@/lib/visualize';
+import { SUPPORT_EMAIL } from '@/lib/config';
 import { InterpretError, QuotaExceededError, interpretDream } from '@/lib/interpret';
 import { usePremium } from '@/lib/purchases';
 import { maybeAskForReview } from '@/lib/review';
 import type { Dream, Interpretation } from '@/lib/types';
 import { formatLong } from '@/lib/dates';
-import { colors, MOODS, space } from '@/lib/theme';
+import { colors, MOODS, radius, space } from '@/lib/theme';
 import { InterpretationView } from '@/components/InterpretationView';
 import { Body, Button, Card, Chip, Disclaimer, H1, Row, Screen, Small } from '@/components/ui';
 
@@ -25,11 +28,22 @@ export default function EntryDetail() {
   const autoRan = useRef(false);
   const quotaBlocked = useRef(false);
   const shareRef = useRef<View>(null);
+  const [imageFile, setImageFile] = useState<string | null>(null);
+  const [freeImageUsed, setFreeImageUsed] = useState(false);
+  const [painting, setPainting] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const [d, i] = await Promise.all([getDream(db, id), getInterpretation(db, id)]);
+    const [d, i, img, freeUsed] = await Promise.all([
+      getDream(db, id),
+      getInterpretation(db, id),
+      getDreamImageFile(db, id),
+      getSetting(db, 'free_image_used'),
+    ]);
     setDream(d);
     setInterp(i);
+    setImageFile(img);
+    setFreeImageUsed(freeUsed === '1');
     return { d, i };
   }, [db, id]);
 
@@ -86,6 +100,76 @@ export default function EntryDetail() {
     }
   }, [isPremium, interp, dream, loading, runInterpretation]);
 
+  const openImagePaywall = useCallback(async () => {
+    // The user's own first image is the hero picture on the paywall.
+    const first = await getSetting(db, 'free_image_file');
+    router.push({ pathname: '/paywall', params: { reason: 'image', image: first && imageExists(first) ? first : '' } });
+  }, [db]);
+
+  const runVisualize = useCallback(async () => {
+    if (!dream || !appUserId) return;
+    if (!isPremium && freeImageUsed) return openImagePaywall();
+    if ((await getSetting(db, 'ai_image_consent')) !== '1') {
+      if (!(await askImageConsent())) return;
+      await setSetting(db, 'ai_image_consent', '1');
+    }
+    setPainting(true);
+    setImageError(null);
+    try {
+      const { file } = await visualizeDream(db, dream, { appUserId });
+      setImageFile(file);
+      if (!isPremium) {
+        await setSetting(db, 'free_image_used', '1');
+        await setSetting(db, 'free_image_file', file);
+        setFreeImageUsed(true);
+      }
+    } catch (e) {
+      if (e instanceof ImagePremiumRequiredError) {
+        await setSetting(db, 'free_image_used', '1');
+        setFreeImageUsed(true);
+        openImagePaywall();
+      } else if (e instanceof ImageCapError || e instanceof VisualizeError) {
+        setImageError(e.message);
+      } else {
+        setImageError('Something went wrong. Please try again.');
+      }
+    } finally {
+      setPainting(false);
+    }
+  }, [db, dream, appUserId, isPremium, freeImageUsed, openImagePaywall]);
+
+  const shareImage = async () => {
+    if (!imageFile) return;
+    try {
+      await Sharing.shareAsync(imageUri(imageFile), { mimeType: 'image/jpeg', dialogTitle: 'Share your dream image' });
+    } catch {
+      Alert.alert("Couldn't share the image", 'Please try again.');
+    }
+  };
+
+  // Apple 1.2: users can report AI-generated content and remove it.
+  const reportImage = () =>
+    Alert.alert('Report or remove this image?', 'Tell us if the picture is offensive or inappropriate, or just remove it.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Report to DreamPattern',
+        onPress: () =>
+          Linking.openURL(
+            `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Report a dream image')}&body=${encodeURIComponent(
+              'What was wrong with the image? (Please attach a screenshot if you can.)\n\n',
+            )}`,
+          ).catch(() => Alert.alert('Email us', `Send the report to ${SUPPORT_EMAIL}.`)),
+      },
+      {
+        text: 'Remove image',
+        style: 'destructive',
+        onPress: async () => {
+          await removeDreamImage(db, id);
+          setImageFile(null);
+        },
+      },
+    ]);
+
   const share = async () => {
     try {
       const uri = await captureRef(shareRef, { format: 'png', quality: 0.95 });
@@ -129,6 +213,46 @@ export default function EntryDetail() {
         <Body>{dream.body}</Body>
       </Card>
 
+      {imageFile && !painting && (
+        <>
+          <Image
+            source={{ uri: imageUri(imageFile) }}
+            style={{ width: '100%', aspectRatio: 4 / 5, borderRadius: radius.lg, backgroundColor: colors.card }}
+            accessibilityLabel="AI-generated picture of this dream"
+          />
+          <Small style={{ textAlign: 'center' }}>AI-generated image</Small>
+          <Row style={{ justifyContent: 'space-between' }}>
+            <Button title="Share image" variant="secondary" onPress={shareImage} />
+            {isPremium && <Button title="Redraw" variant="ghost" onPress={runVisualize} />}
+            <Button title="Report" variant="ghost" onPress={reportImage} />
+          </Row>
+        </>
+      )}
+
+      {painting && (
+        <Card style={{ alignItems: 'center', paddingVertical: space.xl }}>
+          <ActivityIndicator color={colors.gold} />
+          <Body dim>Painting your dream… this takes a few seconds.</Body>
+        </Card>
+      )}
+
+      {imageError && !painting && (
+        <Card style={{ borderColor: colors.danger }}>
+          <Body>{imageError}</Body>
+        </Card>
+      )}
+
+      {!imageFile && !painting && (
+        <Button
+          title={
+            isPremium ? '✦ Visualize this dream' : freeImageUsed ? '✦ Visualize this dream (Premium)' : '✦ Visualize this dream, first one free'
+          }
+          variant="secondary"
+          onPress={runVisualize}
+          disabled={!ready}
+        />
+      )}
+
       {loading && (
         <Card style={{ alignItems: 'center', paddingVertical: space.xl }}>
           <ActivityIndicator color={colors.accent} />
@@ -150,6 +274,12 @@ export default function EntryDetail() {
       {interp && (
         <>
           <View ref={shareRef} collapsable={false} style={{ backgroundColor: colors.bg, padding: space.sm }}>
+            {imageFile && (
+              <Image
+                source={{ uri: imageUri(imageFile) }}
+                style={{ width: '100%', aspectRatio: 4 / 5, borderRadius: radius.md, marginBottom: space.sm }}
+              />
+            )}
             <InterpretationView i={interp} />
             <Text style={{ color: colors.textMuted, textAlign: 'center', fontSize: 12 }}>
               Interpreted with DreamPattern · dreampattern.app
@@ -171,6 +301,23 @@ export default function EntryDetail() {
       </Row>
     </Screen>
   );
+}
+
+// Apple 5.1.2(i): images add a second AI provider (Google), so they get their own consent.
+function askImageConsent(): Promise<boolean> {
+  return new Promise((resolve) => {
+    Alert.alert(
+      'Turn this dream into a picture?',
+      'Your dream text is sent to our AI provider, Anthropic, which writes a short scene description without names. ' +
+        'Only that description is sent to Google\'s image model to paint the picture. Neither company uses it to train AI ' +
+        '(Google may keep it briefly for abuse checks), and our server stores neither the dream nor the picture. The image is saved only on this phone.',
+      [
+        { text: 'Not now', style: 'cancel', onPress: () => resolve(false) },
+        { text: 'Continue', onPress: () => resolve(true) },
+      ],
+      { cancelable: true, onDismiss: () => resolve(false) },
+    );
+  });
 }
 
 // Apple 5.1.2(i): ask before dream text goes to a third-party AI.
