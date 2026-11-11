@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { setSetting } from '@/lib/db';
-import { WHATS_NEW_KEY } from '@/lib/whatsNew';
+import { SAMPLE_DREAM_IMAGE, WHATS_NEW_KEY } from '@/lib/whatsNew';
 import { requestReminderPermission, scheduleMorningReminder } from '@/lib/reminders';
 import { Body, Button, H1, Screen, Small } from '@/components/ui';
-import { colors, space } from '@/lib/theme';
+import { colors, radius, space } from '@/lib/theme';
 
-const CARDS = [
+const CARDS: { emoji: string; image?: number; title: string; body: string }[] = [
   {
     emoji: '🎙️',
     title: 'Catch it before it fades',
@@ -21,6 +21,7 @@ const CARDS = [
   },
   {
     emoji: '🎨',
+    image: SAMPLE_DREAM_IMAGE,
     title: 'See your dream as a painting',
     body: 'Tap Visualize on any dream to turn it into dreamlike art. Your first image is free.',
   },
@@ -58,7 +59,16 @@ export default function Onboarding() {
     return (
       <Screen scroll={false} edges={['top', 'bottom']}>
         <View style={{ flex: 1, justifyContent: 'center', gap: space.lg }}>
-          <Text style={{ fontSize: 64, textAlign: 'center', color: colors.gold }}>{c.emoji}</Text>
+          {c.image ? (
+            <Image
+              source={c.image}
+              style={{ alignSelf: 'center', width: 232, height: 290, borderRadius: radius.lg }}
+              resizeMode="cover"
+              accessibilityLabel="Example dream painting: a child running toward a sunrise and a rainbow, away from a storm"
+            />
+          ) : (
+            <Text style={{ fontSize: 64, textAlign: 'center', color: colors.gold }}>{c.emoji}</Text>
+          )}
           <H1 style={{ textAlign: 'center' }}>{c.title}</H1>
           <Body dim style={{ textAlign: 'center' }}>
             {c.body}
