@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { listDreams, setSetting } from '@/lib/db';
 import { Body, Button, H1, Screen } from '@/components/ui';
-import { WHATS_NEW_KEY } from '@/lib/whatsNew';
+import { SAMPLE_DREAM_IMAGE, WHATS_NEW_KEY } from '@/lib/whatsNew';
 import { colors, radius, space } from '@/lib/theme';
 
 
@@ -45,10 +45,12 @@ const SLIDES: Slide[] = [
     title: 'New: dream images',
     body: 'Turn any dream into a painting. DreamPattern paints the scene in a soft, dreamlike style you can keep with your entry.',
     art: (
-      <View style={[a.frame, { backgroundColor: '#2B2160' }]}>
-        <Text style={a.big}>🌙</Text>
-        <Text style={a.sparkle}>✦ ✧ ✦</Text>
-      </View>
+      <Image
+        source={SAMPLE_DREAM_IMAGE}
+        style={{ alignSelf: 'center', width: 232, height: 290, borderRadius: radius.lg }}
+        resizeMode="cover"
+        accessibilityLabel="Example dream painting: a child running across a meadow toward a sunrise and a rainbow, away from a storm"
+      />
     ),
   },
   {
