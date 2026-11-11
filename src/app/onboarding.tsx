@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { setSetting } from '@/lib/db';
+import { WHATS_NEW_KEY } from '@/lib/whatsNew';
 import { requestReminderPermission, scheduleMorningReminder } from '@/lib/reminders';
 import { Body, Button, H1, Screen, Small } from '@/components/ui';
 import { colors, space } from '@/lib/theme';
@@ -17,6 +18,11 @@ const CARDS = [
     emoji: '✦',
     title: 'See what your dreams repeat',
     body: 'Get a reading of each dream, then watch recurring symbols, people and places emerge over weeks.',
+  },
+  {
+    emoji: '🎨',
+    title: 'See your dream as a painting',
+    body: 'Tap Visualize on any dream to turn it into dreamlike art. Your first image is free.',
   },
   {
     emoji: '🔒',
@@ -38,6 +44,8 @@ export default function Onboarding() {
         await setSetting(db, 'reminder', '07:00');
       }
       await setSetting(db, 'onboarded', '1');
+      // New installs learn about dream images here, so they skip the update carousel.
+      await setSetting(db, WHATS_NEW_KEY, '1');
       router.replace('/');
       router.push('/capture');
     } finally {

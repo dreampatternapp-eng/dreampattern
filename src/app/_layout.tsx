@@ -27,6 +27,7 @@ export default function RootLayout() {
               <Stack.Screen name="capture" options={{ presentation: 'modal', title: "Last night's dream" }} />
               <Stack.Screen name="entry/[id]" options={{ title: '', headerBackButtonDisplayMode: 'minimal' }} />
               <Stack.Screen name="paywall" options={{ presentation: 'modal', headerShown: false }} />
+              <Stack.Screen name="whats-new" options={{ presentation: 'modal', headerShown: false }} />
             </Stack>
           </LockGate>
         </PremiumProvider>
