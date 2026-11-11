@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Text, type ColorValue } from 'react-native';
-import { Redirect, Tabs } from 'expo-router';
+import { Redirect, Tabs, router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { getSetting } from '@/lib/db';
+import { getSetting, setSetting } from '@/lib/db';
+import { SEEN_IMAGES_INTRO } from '@/lib/sampleImage';
 import { colors } from '@/lib/theme';
 
 const icon = (glyph: string) => ({ color }: { color: ColorValue }) => (
@@ -16,6 +17,20 @@ export default function TabsLayout() {
   useEffect(() => {
     getSetting(db, 'onboarded').then((v) => setOnboarded(v === '1'));
   }, [db]);
+
+  // Existing users who updated from a version without dream images see the "What's new" carousel once.
+  useEffect(() => {
+    if (!onboarded) return;
+    let cancelled = false;
+    (async () => {
+      if ((await getSetting(db, SEEN_IMAGES_INTRO)) === '1') return;
+      await setSetting(db, SEEN_IMAGES_INTRO, '1');
+      if (!cancelled) setTimeout(() => router.push('/whats-new'), 600);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [db, onboarded]);
 
   if (onboarded === null) return null;
   if (!onboarded) return <Redirect href="/onboarding" />;
