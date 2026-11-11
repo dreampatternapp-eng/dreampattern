@@ -42,7 +42,7 @@ jobs:
 
       - name: Set the Gemini key for dream images
         if: env.GEMINI_API_KEY != ''
-        run: supabase secrets set GEMINI_API_KEY="$GEMINI_API_KEY" --project-ref "$PROJECT_REF"
+        run: supabase secrets set GEMINI_API_KEY="$GEMINI_API_KEY" --project-ref "$PROJECT_REF" --yes
 
       - name: Deploy edge functions
-        run: supabase functions deploy --project-ref "$PROJECT_REF"
+        run: supabase functions deploy --project-ref "$PROJECT_REF" --yes
