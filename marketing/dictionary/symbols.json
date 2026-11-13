@@ -114,6 +114,27 @@
     "related": ["water", "tsunami", "cant-run"]
   },
   {
+    "slug": "water",
+    "name": "Water",
+    "title": "Dreaming of water",
+    "description": "Water dream meaning: what calm, rough, clear or murky water can point to in a dream, with common themes and questions to reflect on.",
+    "intro": "Water shows up in dreams in many forms: a still lake, a rising flood, a warm bath, rain on a window, or an ocean you cannot see the end of. Because water changes so much, the meaning of a water dream often depends on what it was doing and how you felt around it. Calm, clear water and dark, rushing water can leave you with very different feelings when you wake.",
+    "themes": [
+      ["Emotions and mood", "Many people link water with feelings. Calm water can mirror a settled mood, while waves, storms or floods can echo emotions that feel stirred up or hard to contain."],
+      ["Clarity or confusion", "Clear water you can see through may connect with seeing a situation plainly. Murky or dark water can reflect uncertainty, or something you have not looked at closely yet."],
+      ["Being carried along", "Drifting with a current or being swept downstream can mirror a part of life that seems to be moving on its own, for better or worse."],
+      ["Rest and renewal", "Swimming easily, bathing or wading can reflect a wish to rest, reset or wash something off after a hard stretch."],
+      ["Depth and the unknown", "Deep water hides what is below. Some people notice these dreams when they are close to a big decision or a feeling they have not fully named."]
+    ],
+    "questions": [
+      "Was the water calm, rough, clear or murky, and did that match how your week has felt?",
+      "Were you in the water, near it, or watching it from somewhere safe?",
+      "Did you feel relaxed, curious or afraid around the water?",
+      "Is there a feeling you have been keeping below the surface lately?"
+    ],
+    "related": ["drowning", "tsunami", "flying"]
+  },
+  {
     "slug": "naked-in-public",
     "name": "Being naked in public",
     "title": "Dreaming of being naked in public",

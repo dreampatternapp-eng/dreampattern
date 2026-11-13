@@ -21,7 +21,7 @@ Rob asked on 2026-11-02 for one search-focused page a week on each app's website
 ## Backlog (top = next). Strike through when published.
 1. ~~How to remember your dreams (how to remember your dreams)~~ 2026-11-05
 2. ~~How to start a dream journal (dream journal, how to keep a dream journal)~~ 2026-11-06
-3. **symbol** Dreaming of water (water dream meaning)
+3. ~~**symbol** Dreaming of water (water dream meaning)~~ 2026-11-13
 4. Recurring dreams: why they happen and what to do (recurring dreams)
 5. **symbol** Dreaming of being shot (dream of being shot)
 6. Lucid dreaming for beginners (how to lucid dream)
