@@ -32,7 +32,7 @@
     ],
     "questions": [
       "What, if anything, have you been avoiding lately?",
-      "Did you recognise the chaser, or what it reminded you of?",
+      "Did you recognize the chaser, or what it reminded you of?",
       "Did you escape, hide, or get caught, and how did that feel?"
     ],
     "related": ["cant-run", "lost", "monster"]
@@ -61,7 +61,7 @@
     "name": "Flying",
     "title": "Dreaming of flying",
     "description": "What flying dreams can mean, from freedom and confidence to escape, plus how flying dreams link to lucid dreaming.",
-    "intro": "Flying dreams are often some of the most joyful dreams people remember. You might soar over cities, glide just above the ground, or struggle to stay up. Many lucid dreamers say flying is the first thing they try once they realise they are dreaming.",
+    "intro": "Flying dreams are often some of the most joyful dreams people remember. You might soar over cities, glide just above the ground, or struggle to stay up. Many lucid dreamers say flying is the first thing they try once they realize they are dreaming.",
     "themes": [
       ["Freedom", "Rising above everything can reflect a sense of release, or a wish for more of it."],
       ["Confidence and perspective", "Seeing the world from above can echo a moment where things finally make sense or feel within reach."],
@@ -71,7 +71,7 @@
     "questions": [
       "Was flying easy, or did you have to work to stay in the air?",
       "Where were you going, or what were you leaving?",
-      "Did you realise you were dreaming while it happened?"
+      "Did you realize you were dreaming while it happened?"
     ],
     "related": ["falling", "lucid-dream", "water"]
   },
@@ -139,7 +139,7 @@
     "name": "Being naked in public",
     "title": "Dreaming of being naked in public",
     "description": "Why you might dream of being naked in public, at school or work, and what the reactions of others in the dream can mean.",
-    "intro": "Suddenly realising you are naked, or half dressed, in front of other people is a classic dream. Interestingly, in many of these dreams nobody else seems to notice.",
+    "intro": "Suddenly realizing you are naked, or half dressed, in front of other people is a classic dream. Interestingly, in many of these dreams nobody else seems to notice.",
     "themes": [
       ["Vulnerability", "Being seen without the usual cover can mirror feeling exposed, perhaps in a new job, a new relationship or after sharing something personal."],
       ["Fear of being found out", "Some people link these dreams with impostor feelings, the worry that others will discover you are not as prepared as you seem."],
@@ -261,7 +261,7 @@
       ["Damage or decay", "Leaks, cracks or crumbling walls can echo stress or something in life that needs attention."]
     ],
     "questions": [
-      "Whose house was it, and did you recognise it?",
+      "Whose house was it, and did you recognize it?",
       "What did you find in the rooms?",
       "How did being there feel?"
     ],
@@ -386,7 +386,7 @@
     "name": "Being lost",
     "title": "Dreaming of being lost",
     "description": "What dreams about being lost in a city, building or forest can mean, plus questions to reflect on.",
-    "intro": "Wandering through streets you don't recognise, corridors that loop back, or a forest with no path: being lost is a common dream and often a frustrating one.",
+    "intro": "Wandering through streets you don't recognize, corridors that loop back, or a forest with no path: being lost is a common dream and often a frustrating one.",
     "themes": [
       ["Lack of direction", "Being lost can mirror uncertainty about where life, work or a relationship is heading."],
       ["A big decision", "When you are torn between options, the mind can turn it into a maze."],
