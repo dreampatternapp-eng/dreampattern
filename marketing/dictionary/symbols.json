@@ -35,7 +35,7 @@
       "Did you recognize the chaser, or what it reminded you of?",
       "Did you escape, hide, or get caught, and how did that feel?"
     ],
-    "related": ["cant-run", "lost", "monster"]
+    "related": ["cant-run", "lost", "monster", "being-shot"]
   },
   {
     "slug": "falling",
@@ -208,7 +208,7 @@
       "Who died in the dream, and how do you feel about them lately?",
       "Was the dream sad, peaceful or frightening?"
     ],
-    "related": ["dead-loved-one", "baby", "house"]
+    "related": ["dead-loved-one", "baby", "house", "being-shot"]
   },
   {
     "slug": "ex-partner",
@@ -417,7 +417,7 @@
       "Who did you want to call or warn?",
       "Have you been holding your voice back lately?"
     ],
-    "related": ["being-chased", "drowning", "teeth-falling-out"]
+    "related": ["being-chased", "drowning", "teeth-falling-out", "being-shot"]
   },
   {
     "slug": "cheating",
@@ -494,5 +494,26 @@
       "Is there something you would like to tell them?"
     ],
     "related": ["death", "house", "dogs"]
+  },
+  {
+    "slug": "being-shot",
+    "name": "Being shot",
+    "title": "Dreaming of being shot",
+    "description": "What it can mean to dream of being shot or shot at: common themes behind this frightening dream, questions to reflect on, and related dreams.",
+    "intro": "A dream of being shot can jolt you awake with your heart racing. Sometimes you see who fires, sometimes it comes out of nowhere, and sometimes you are shot at but never hit. A dream like this does not predict violence. Many people find it echoes stress, conflict or a sense of being exposed in waking life, and the details, like where you were hit and how you felt, often say more than the event itself. If dreams like this follow a frightening real experience or keep returning, it can help to talk to a doctor.",
+    "themes": [
+      ["Feeling attacked or criticized", "Being targeted can mirror a time when you feel blamed, judged or singled out, at work, at home or online. Some people notice these dreams after a sharp comment or an argument."],
+      ["A sudden shock", "A shot happens fast and without warning. The dream can show up after news, a change or a decision that caught you off guard."],
+      ["Being exposed", "Standing in the open with nowhere to hide can echo feeling vulnerable, as if others can see a weakness or a mistake you would rather keep private."],
+      ["Conflict you are avoiding", "If you know who is shooting, think about your relationship with that person or what they stand for. The dream may point to tension that has not been talked through."],
+      ["Something coming to an end", "Some people read being shot as a sharp, final ending. It can reflect a role, habit or chapter of life that is closing, whether you chose it or not."]
+    ],
+    "questions": [
+      "Did you know who was shooting, and does that person or place connect to anything in your life right now?",
+      "Have someone's words or actions stung you recently?",
+      "Were you hit, or only shot at, and did you feel pain, fear, or a strange calm?",
+      "Where in your life do you feel exposed, or as if you have nowhere to hide?"
+    ],
+    "related": ["being-chased", "cant-run", "death"]
   }
 ]

@@ -23,7 +23,7 @@ Rob asked on 2026-11-02 for one search-focused page a week on each app's website
 2. ~~How to start a dream journal (dream journal, how to keep a dream journal)~~ 2026-11-06
 3. ~~**symbol** Dreaming of water (water dream meaning)~~ 2026-11-13
 4. ~~Recurring dreams: why they happen and what to do (recurring dreams)~~ 2026-11-20
-5. **symbol** Dreaming of being shot (dream of being shot)
+5. ~~**symbol** Dreaming of being shot (dream of being shot)~~ 2026-11-27
 6. Lucid dreaming for beginners (how to lucid dream)
 7. **symbol** Dreaming of your partner leaving you (dream partner leaves me)
 8. Why do I dream about my ex? (why do I dream about my ex) — links to /dreams/ex-partner
